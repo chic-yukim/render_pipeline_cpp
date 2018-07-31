@@ -51,8 +51,6 @@
 
 namespace rppanda {
 
-TypeHandle DirectGuiBase::type_handle_;
-
 DirectGuiBase::~DirectGuiBase() = default;
 
 boost::any& DirectGuiBase::create_component(const std::string& component_name, boost::any&& component)

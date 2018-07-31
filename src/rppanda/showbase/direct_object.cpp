@@ -49,8 +49,6 @@ DirectObject::TaskContainer::TaskContainer(DirectObject* owner, AsyncTask* task)
 
 // ************************************************************************************************
 
-TypeHandle DirectObject::type_handle_;
-
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 DirectObject::DirectObject(DirectObject&&) = default;
 #endif

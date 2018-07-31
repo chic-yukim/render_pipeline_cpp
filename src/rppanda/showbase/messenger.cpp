@@ -41,8 +41,6 @@
 
 namespace rppanda {
 
-TypeHandle Messenger::type_handle_;
-
 Messenger::~Messenger()
 {
     clear();

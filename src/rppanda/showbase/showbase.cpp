@@ -84,13 +84,13 @@ public:
     std::shared_ptr<PandaFramework> panda_framework_;
     WindowFramework* window_framework_ = nullptr;
 
-    PT(rppanda::Loader) loader_ = nullptr;
+    std::unique_ptr<rppanda::Loader> loader_;
     Messenger* messenger_ = nullptr;
     TaskManager* task_mgr_ = nullptr;
     GraphicsEngine* graphics_engine_ = nullptr;
     GraphicsWindow* win_ = nullptr;
 
-    PT(SfxPlayer) sfx_player_;
+    std::unique_ptr<SfxPlayer> sfx_player_;
     PT(AudioManager) sfx_manager_;
     PT(AudioManager) music_manager_;
 
@@ -258,7 +258,7 @@ void ShowBase::Impl::initailize(ShowBase* self)
     // interface.
     self->use_trackball();
 
-    loader_ = new rppanda::Loader(*self);
+    loader_ = std::make_unique<rppanda::Loader>(*self);
 
     messenger_ = Messenger::get_global_instance();
     task_mgr_ = TaskManager::get_global_instance();
@@ -447,7 +447,7 @@ void ShowBase::Impl::create_base_audio_managers()
 {
     rppanda_showbase_cat.debug() << "Creating base audio manager ..." << std::endl;
 
-    sfx_player_ = new SfxPlayer;
+    sfx_player_ = std::make_unique<SfxPlayer>();
     sfx_manager_ = AudioManager::create_AudioManager();
     add_sfx_manager(sfx_manager_);
 
@@ -527,8 +527,6 @@ void ShowBase::Impl::window_event(ShowBase* self, const Event* ev)
 
 // ************************************************************************************************
 
-TypeHandle ShowBase::type_handle_;
-
 ShowBase* ShowBase::get_global_ptr()
 {
     return Impl::global_ptr;
@@ -571,10 +569,7 @@ ShowBase::~ShowBase()
         impl_->sfx_manager_is_valid_list_.clear();
     }
 
-    if (impl_->loader_)
-    {
-        impl_->loader_.clear();
-    }
+    impl_->loader_.reset();
 
     // will remove in PandaFramework::close_framework() or PandaFramework::~PandaFramework()
     //impl_->graphics_engine_->remove_all_windows();
@@ -607,7 +602,7 @@ WindowFramework* ShowBase::get_window_framework() const
 
 rppanda::Loader* ShowBase::get_loader() const
 {
-    return impl_->loader_;
+    return impl_->loader_.get();
 }
 
 Messenger* ShowBase::get_messenger() const
@@ -637,7 +632,7 @@ const std::vector<PT(AudioManager)>& ShowBase::get_sfx_manager_list() const
 
 SfxPlayer* ShowBase::get_sfx_player() const
 {
-    return impl_->sfx_player_;
+    return impl_->sfx_player_.get();
 }
 
 AudioManager* ShowBase::get_music_manager() const

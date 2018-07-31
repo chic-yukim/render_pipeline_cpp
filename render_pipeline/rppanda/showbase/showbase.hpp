@@ -80,8 +80,6 @@ public:
 
     virtual ~ShowBase();
 
-    ALLOC_DELETED_CHAIN(ShowBase);
-
     ShowBase& operator=(const ShowBase&) = delete;
     ShowBase& operator=(ShowBase&&) = delete;
 
@@ -301,39 +299,6 @@ public:
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;
-
-public:
-    static TypeHandle get_class_type();
-    static void init_type();
-    TypeHandle get_type() const override;
-    TypeHandle force_init_type() override;
-
-private:
-    static TypeHandle type_handle_;
 };
-
-// ************************************************************************************************
-
-inline TypeHandle ShowBase::get_class_type()
-{
-    return type_handle_;
-}
-
-inline void ShowBase::init_type()
-{
-    DirectObject::init_type();
-    register_type(type_handle_, "rppanda::ShowBase", DirectObject::get_class_type());
-}
-
-inline TypeHandle ShowBase::get_type() const
-{
-    return get_class_type();
-}
-
-inline TypeHandle ShowBase::force_init_type()
-{
-    init_type();
-    return get_class_type();
-}
 
 }

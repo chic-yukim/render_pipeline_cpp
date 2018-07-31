@@ -73,8 +73,6 @@ public:
     DirectGuiBase() = default;
     ~DirectGuiBase();
 
-    ALLOC_DELETED_CHAIN(DirectGuiBase);
-
     const std::string& get_gui_id() const;
 
     /** Create a component (during construction or later) for this widget. */
@@ -100,15 +98,6 @@ protected:
 
 private:
     std::unordered_map<std::string, boost::any> component_info_;
-
-public:
-    static TypeHandle get_class_type();
-    static void init_type();
-    TypeHandle get_type() const override;
-    TypeHandle force_init_type() override;
-
-private:
-    static TypeHandle type_handle_;
 };
 
 inline bool DirectGuiBase::has_component(const std::string& name) const
@@ -121,30 +110,8 @@ inline const std::string& DirectGuiBase::get_gui_id() const
     return gui_id_;
 }
 
-inline TypeHandle DirectGuiBase::get_class_type()
-{
-    return type_handle_;
-}
-
-inline void DirectGuiBase::init_type()
-{
-    DirectObject::init_type();
-    register_type(type_handle_, "rppanda::DirectGuiBase", DirectObject::get_class_type());
-}
-
-inline TypeHandle DirectGuiBase::get_type() const
-{
-    return get_class_type();
-}
-
-inline TypeHandle DirectGuiBase::force_init_type()
-{
-    init_type();
-    return get_class_type();
-}
-
 // ************************************************************************************************
-class RENDER_PIPELINE_DECL DirectGuiWidget : public DirectGuiBase, public NodePath
+class RENDER_PIPELINE_DECL DirectGuiWidget : public DirectGuiBase, public TypedReferenceCount, public NodePath
 {
 public:
     /**
@@ -340,8 +307,8 @@ inline TypeHandle DirectGuiWidget::get_class_type()
 
 inline void DirectGuiWidget::init_type()
 {
-    DirectGuiBase::init_type();
-    register_type(type_handle_, "rppanda::DirectGuiWidget", DirectGuiBase::get_class_type());
+    TypedReferenceCount::init_type();
+    register_type(type_handle_, "rppanda::DirectGuiWidget", TypedReferenceCount::get_class_type());
 }
 
 inline TypeHandle DirectGuiWidget::get_type() const
