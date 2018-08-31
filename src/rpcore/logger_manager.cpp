@@ -22,6 +22,10 @@
 #include "render_pipeline/rpcore/logger_manager.hpp"
 
 #include <spdlog/spdlog.h>
+#if defined(SPDLOG_VER_MAJOR)
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#endif
 
 namespace rpcore {
 
@@ -61,12 +65,22 @@ void LoggerManager::create(const std::string& file_path)
     sinks.push_back(std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>());
 #endif
     if (!file_path.empty())
+    {
+#if defined(SPDLOG_VER_MAJOR)
+        sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(file_path, true));
+#else
         sinks.push_back(std::make_shared<spdlog::sinks::simple_file_sink_mt>(file_path, true));
+#endif
+    }
 
     logger_ = std::make_shared<spdlog::logger>("render_pipeline", std::begin(sinks), std::end(sinks));
     global_logger_ = logger_.get();
 
+#if defined(SPDLOG_VER_MAJOR)
+    logger_->set_pattern("%^[%H:%M:%S.%e] [%t] [%l] %v%$");
+#else
     logger_->set_pattern("[%H:%M:%S.%e] [%t] [%l] %v");
+#endif
     logger_->flush_on(spdlog::level::err);
 
     logger_->debug("LoggerManager created logger");
