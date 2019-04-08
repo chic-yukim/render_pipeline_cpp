@@ -119,11 +119,14 @@ private:
     {
     public:
         TaskContainer(DirectObject* owner, AsyncTask* task);
-        void wp_callback(void*) final { owner_->task_list_.erase(task_id_); }
+        ~TaskContainer() override;
+
+        void wp_callback(void*) final { deleting_ = true; owner_->task_list_.erase(task_id_); }
 
         WPT(AsyncTask) task_;
 
     private:
+        bool deleting_ = false;
         DirectObject* owner_;
         AtomicAdjust::Integer task_id_;     // While destructing AsyncTask, ID already is deleted
                                             // So, we save it.
@@ -131,7 +134,7 @@ private:
 
     void do_add_task(AsyncTask* task);
 
-    std::unordered_map<AtomicAdjust::Integer, TaskContainer> task_list_;
+    std::unordered_map<AtomicAdjust::Integer, std::unique_ptr<TaskContainer>> task_list_;
 };
 
 }
