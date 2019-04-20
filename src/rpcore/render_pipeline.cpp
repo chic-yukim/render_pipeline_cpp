@@ -432,6 +432,11 @@ AsyncTask::DoneStatus RenderPipeline::Impl::plugin_post_render_update(rppanda::F
 void RenderPipeline::Impl::handle_window_event(const Event* ev)
 {
     showbase_->window_event(ev);
+
+    auto win = showbase_->get_win();
+    if (!(win && win->is_valid()))
+        return;
+
     LVecBase2i window_dims(showbase_->get_win()->get_size());
     if (window_dims != last_window_dims && window_dims != Globals::native_resolution)
     {
@@ -455,7 +460,7 @@ void RenderPipeline::Impl::handle_window_event(const Event* ev)
 
     // set lens parameter after window event.
     // and set highest priority for running first.
-    showbase_->get_task_mgr()->add([this](rppanda::FunctionalTask* task) {
+    showbase_->add_task([this](rppanda::FunctionalTask* task) {
         adjust_lens_setting();
         return AsyncTask::DS_done;
     }, "RP_HandleWindowResize", -100);
