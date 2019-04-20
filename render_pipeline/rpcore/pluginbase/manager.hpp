@@ -52,6 +52,8 @@ public:
     typedef std::unique_ptr<BasePlugin> (PluginCreatorType)(RenderPipeline&);
 
 public:
+    static void release_all_dll();
+
     /**
      * Constructs a new manager with no plugins loaded. To load settings
      * and plugins, call load().
