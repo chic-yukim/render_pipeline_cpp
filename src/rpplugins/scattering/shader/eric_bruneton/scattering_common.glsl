@@ -6,7 +6,6 @@
 
 
 // Don't use fast precision, leads to compilation issues for compute shaders
-#define NO_FAST_PRECISION
 // #define SCATTERING_USE_32_BIT 1
 
 #pragma include "render_pipeline_base.inc.glsl"
